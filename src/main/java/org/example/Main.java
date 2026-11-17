@@ -1,17 +1,40 @@
 package org.example;
 
+import com.google.gson.GsonBuilder;
+
+import java.util.ArrayList;
+
 //TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
 // click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
 public class Main {
-    static void main() {
-        //TIP Press <shortcut actionId="ShowIntentionActions"/> with your caret at the highlighted text
-        // to see how IntelliJ IDEA suggests fixing it.
-        IO.println(String.format("Hello and welcome!"));
 
-        for (int i = 1; i <= 5; i++) {
-            //TIP Press <shortcut actionId="Debug"/> to start debugging your code. We have set one <icon src="AllIcons.Debugger.Db_set_breakpoint"/> breakpoint
-            // for you, but you can always add more by pressing <shortcut actionId="ToggleLineBreakpoint"/>.
-            IO.println("i = " + i);
+    public static ArrayList<Block> blockchain = new ArrayList<Block>();
+
+    static void main() {
+        blockchain.add(new Block("Hi im the first block", "0"));
+        blockchain.add(new Block("Yo im the second block", blockchain.get(blockchain.size() - 1).hash));
+        blockchain.add(new Block("Hey im the third block", blockchain.get(blockchain.size() - 1).hash));
+
+        String blockchainJson = new GsonBuilder().setPrettyPrinting().create().toJson(blockchain);
+        System.out.println(blockchainJson);
+    }
+
+    public static boolean isChainValid() {
+        Block currentBlock;
+        Block previousBlock;
+
+        for (int i = 0; i < blockchain.size(); i++) {
+            currentBlock = blockchain.get(i);
+            previousBlock = blockchain.get(i - 1);
+
+            if(!currentBlock.hash.equals(currentBlock.calculateHash())) {
+                return false;
+            }
+            if(!previousBlock.hash.equals(currentBlock.calculateHash())) {
+                return false;
+            }
+
         }
+        return true;
     }
 }
