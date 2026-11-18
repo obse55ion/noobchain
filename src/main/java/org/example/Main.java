@@ -8,22 +8,35 @@ import java.util.ArrayList;
 // click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
 public class Main {
 
+    public static int difficulty = 5;
     public static ArrayList<Block> blockchain = new ArrayList<Block>();
 
     static void main() {
         blockchain.add(new Block("Hi im the first block", "0"));
-        blockchain.add(new Block("Yo im the second block", blockchain.get(blockchain.size() - 1).hash));
-        blockchain.add(new Block("Hey im the third block", blockchain.get(blockchain.size() - 1).hash));
+        System.out.println("Trying to Mine block 1... ");
+        blockchain.get(0).mineBlock(difficulty);
+
+        blockchain.add(new Block("Yo im the second block",blockchain.get(blockchain.size()-1).hash));
+        System.out.println("Trying to Mine block 2... ");
+        blockchain.get(1).mineBlock(difficulty);
+
+        blockchain.add(new Block("Hey im the third block",blockchain.get(blockchain.size()-1).hash));
+        System.out.println("Trying to Mine block 3... ");
+        blockchain.get(2).mineBlock(difficulty);
+
+        System.out.println("\nBlockchain is Valid: " + isChainValid());
 
         String blockchainJson = new GsonBuilder().setPrettyPrinting().create().toJson(blockchain);
+        System.out.println("\nThe block chain: ");
         System.out.println(blockchainJson);
     }
 
     public static boolean isChainValid() {
         Block currentBlock;
         Block previousBlock;
+        String hashTarget = new String(new char[difficulty]).replace('\0', '0');
 
-        for (int i = 0; i < blockchain.size(); i++) {
+        for (int i = 1; i < blockchain.size(); i++) {
             currentBlock = blockchain.get(i);
             previousBlock = blockchain.get(i - 1);
 
@@ -31,6 +44,10 @@ public class Main {
                 return false;
             }
             if(!previousBlock.hash.equals(currentBlock.calculateHash())) {
+                return false;
+            }
+            if(!currentBlock.hash.substring(0, difficulty).equals(hashTarget)) {
+                System.out.println("This block hasn't been mined");
                 return false;
             }
 
